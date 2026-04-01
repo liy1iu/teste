@@ -4,409 +4,477 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Controle de Vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:        #1e1c35;
+    --surface:   #2a2748;
+    --card:      #332f5a;
+    --blue:      #2A7FA5;
+    --teal:      #1ABFAA;
+    --mint:      #B8F0E0;
+    --text:      #e8f8f4;
+    --muted:     #8db8c8;
+    --border:    rgba(184,240,224,0.12);
+    --border-hi: rgba(26,191,170,0.35);
+    --danger:    #f0786a;
+    --warn:      #f5c26b;
+    --font: 'Montserrat', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Segoe UI', sans-serif;
-    color: #1a1a2e;
+    font-family: var(--font);
+    background-color: var(--bg);
+    background-image: radial-gradient(circle, rgba(184,240,224,0.18) 1.5px, transparent 1.5px);
+    background-size: 36px 36px;
+    color: var(--text);
     min-height: 100vh;
-    background-color: #eaf6f6;
-    background-image: radial-gradient(circle, #2ec4b6 1px, transparent 1px);
-    background-size: 22px 22px;
   }
 
   header {
-    background: #2d2b55;
-    color: white;
-    padding: 1.2rem 2rem;
+    background: rgba(30,28,53,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 1.1rem 2rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    box-shadow: 0 2px 10px rgba(45,43,85,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
-  header h1 { font-size: 1.4rem; font-weight: 600; }
+  header h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--mint);
+  }
+  .header-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 10px var(--teal);
+  }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .card { background: #ffffffee; border-radius: 14px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(45,43,85,0.1); border-top: 3px solid #2d2b55; }
-  .card .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .card .value { font-size: 22px; font-weight: 700; }
-  .card.azul .value { color: #2d7dd2; }
-  .card.red .value { color: #e05c5c; }
-  .card.green .value { color: #2ec4b6; }
-  .card.dark .value { color: #2d2b55; }
+  /* METRIC CARDS */
+  .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 2rem; }
+  .metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .metric:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(26,191,170,0.12); }
+  .metric::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, var(--teal));
+    border-radius: 0 0 16px 16px;
+  }
+  .metric[data-c="blue"]  { --accent: var(--blue); }
+  .metric[data-c="teal"]  { --accent: var(--teal); }
+  .metric[data-c="red"]   { --accent: var(--danger); }
+  .metric[data-c="mint"]  { --accent: var(--mint); }
+  .metric .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .metric .val { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+  .metric[data-c="blue"]  .val { color: #6ec6e8; }
+  .metric[data-c="teal"]  .val { color: var(--teal); }
+  .metric[data-c="red"]   .val { color: var(--danger); }
+  .metric[data-c="mint"]  .val { color: var(--mint); }
 
-  .section { background: #ffffffee; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(45,43,85,0.1); margin-bottom: 1.5rem; }
-  .section h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1.2rem; color: #2d2b55; }
+  /* TABS */
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .tab {
+    padding: 8px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font);
+    color: var(--muted);
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); border-color: var(--border-hi); }
+  .tab.on { background: var(--teal); color: #1e1c35; border-color: var(--teal); }
 
-  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; }
-  .form-group { display: flex; flex-direction: column; gap: 4px; }
-  .form-group label { font-size: 12px; color: #555; font-weight: 500; }
-  .form-group input, .form-group select {
-    padding: 8px 10px;
-    border: 1.5px solid #b2e8e4;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    background: #f0fbfa;
+  /* SECTION */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section h2 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px; height: 14px;
+    background: var(--teal);
+    border-radius: 2px;
+  }
+
+  /* FORM */
+  .fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .fg { display: flex; flex-direction: column; gap: 5px; }
+  .fg label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .fg input, .fg select {
+    padding: 9px 11px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text);
     outline: none;
-    transition: border 0.2s;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .form-group input:focus, .form-group select:focus { border-color: #2ec4b6; background: white; }
+  .fg input:focus, .fg select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(26,191,170,0.15);
+  }
+  .fg select option { background: var(--card); }
 
-  .btn-row { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
-  .btn { padding: 9px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
-  .btn-primary { background: #2d2b55; color: white; }
-  .btn-primary:hover { background: #3d3a70; }
-  .btn-secondary { background: #e8faf9; color: #2d7dd2; border: 1.5px solid #b2e8e4; }
-  .btn-secondary:hover { background: #d0f4f1; }
-  .btn-danger { background: #fff0f0; color: #e05c5c; border: 1.5px solid #f5b8b8; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; }
-  .btn-danger:hover { background: #ffe0e0; }
+  /* BUTTONS */
+  .btns { display: flex; gap: 10px; margin-top: 1.25rem; flex-wrap: wrap; }
+  .btn {
+    padding: 9px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font);
+    color: var(--muted);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.15s;
+  }
+  .btn:hover { color: var(--text); background: var(--card); border-color: var(--border-hi); }
+  .btn.prim { background: var(--teal); color: #1e1c35; border-color: var(--teal); }
+  .btn.prim:hover { background: #15a894; box-shadow: 0 4px 16px rgba(26,191,170,0.3); }
+  .btn.sm { padding: 4px 10px; font-size: 11px; color: var(--danger); border-color: rgba(240,120,106,0.25); background: rgba(240,120,106,0.08); }
+  .btn.sm:hover { background: rgba(240,120,106,0.18); }
 
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th { text-align: left; padding: 8px 10px; background: #eaf6f6; color: #2d2b55; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
-  td { padding: 9px 10px; border-bottom: 1px solid #e0f5f3; vertical-align: middle; }
+  /* FILTERS */
+  .filters { display: flex; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+  .filters input, .filters select {
+    padding: 7px 11px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .filters input:focus, .filters select:focus { border-color: var(--teal); }
+  .filters select option { background: var(--card); }
+  .filters input { width: 190px; }
+
+  /* TABLE */
+  .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; padding: 10px 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--text); }
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #f0fbfa; }
+  tr:hover td { background: rgba(26,191,170,0.05); }
+  td.id-col { font-size: 11px; color: var(--muted); font-weight: 500; }
 
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .badge.pago { background: #d0f4f1; color: #1a9e96; }
-  .badge.aberto { background: #ffe0e0; color: #c0392b; }
-  .badge.parcial { background: #fef9c3; color: #b45309; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; }
+  .badge.pago    { background: rgba(26,191,170,0.15); color: var(--teal); border: 1px solid rgba(26,191,170,0.3); }
+  .badge.aberto  { background: rgba(240,120,106,0.12); color: var(--danger); border: 1px solid rgba(240,120,106,0.25); }
+  .badge.parcial { background: rgba(245,194,107,0.12); color: var(--warn); border: 1px solid rgba(245,194,107,0.25); }
 
-  .cliente-resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; }
-  .cliente-card { background: #f0fbfa; border: 1.5px solid #b2e8e4; border-radius: 12px; padding: 0.9rem 1rem; }
-  .cliente-card .nome { font-weight: 600; font-size: 14px; color: #2d2b55; margin-bottom: 6px; }
-  .cliente-card .linha { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-top: 3px; }
-  .cliente-card .linha span:last-child { font-weight: 500; }
-  .cliente-card .linha.destaque span:last-child { color: #e05c5c; font-weight: 600; }
+  .ipago {
+    width: 88px; padding: 5px 8px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 12px; font-family: var(--font);
+    color: var(--text); outline: none;
+    transition: border-color 0.15s;
+  }
+  .ipago:focus { border-color: var(--teal); }
 
-  .tabs { display: flex; gap: 4px; margin-bottom: 1.2rem; }
-  .tab { padding: 7px 18px; border-radius: 8px; border: 1.5px solid #b2e8e4; background: #ffffffee; font-size: 13px; font-weight: 500; cursor: pointer; color: #555; font-family: inherit; transition: all 0.15s; }
-  .tab.active { background: #2d2b55; color: white; border-color: #2d2b55; }
+  /* CLIENT CARDS */
+  .cc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+  .cc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.1rem 1.2rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .cc:hover { border-color: var(--border-hi); transform: translateY(-2px); }
+  .cc .nome { font-size: 14px; font-weight: 700; color: var(--mint); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .cc .row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .cc .row span:last-child { color: var(--text); font-weight: 500; }
+  .cc .row.danger span:last-child { color: var(--danger); font-weight: 600; }
+  .cc .row.ok span:last-child { color: var(--teal); font-weight: 600; }
 
-  .empty { text-align: center; padding: 2rem; color: #aaa; font-size: 14px; }
+  .empty { text-align: center; padding: 3rem; font-size: 13px; color: var(--muted); }
 
-  .input-pago { width: 90px; padding: 4px 6px; border: 1.5px solid #b2e8e4; border-radius: 6px; font-size: 13px; font-family: inherit; background: #f0fbfa; outline: none; }
-  .input-pago:focus { border-color: #2ec4b6; background: white; }
-
-  @media (max-width: 600px) {
-    .form-grid { grid-template-columns: 1fr 1fr; }
+  @media(max-width:700px){
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .metric .val { font-size: 1.2rem; }
     table { font-size: 12px; }
-    td, th { padding: 7px 6px; }
-    .input-pago { width: 70px; }
+    th, td { padding: 8px 7px; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <span>🛍️</span>
+  <div class="header-dot"></div>
   <h1>Controle de Vendas</h1>
 </header>
 
 <div class="container">
 
-  <div class="cards">
-    <div class="card azul">
-      <div class="label">Total Vendido</div>
-      <div class="value" id="totalVendido">R$ 0,00</div>
+  <div class="metrics">
+    <div class="metric" data-c="blue">
+      <div class="lbl">Total Vendido</div>
+      <div class="val" id="m-vendido">R$ 0,00</div>
     </div>
-    <div class="card green">
-      <div class="label">Total Recebido</div>
-      <div class="value" id="totalPago">R$ 0,00</div>
+    <div class="metric" data-c="teal">
+      <div class="lbl">Total Recebido</div>
+      <div class="val" id="m-pago">R$ 0,00</div>
     </div>
-    <div class="card red">
-      <div class="label">Em Aberto</div>
-      <div class="value" id="totalAberto">R$ 0,00</div>
+    <div class="metric" data-c="red">
+      <div class="lbl">Em Aberto</div>
+      <div class="val" id="m-aberto">R$ 0,00</div>
     </div>
-    <div class="card dark">
-      <div class="label">Nº de Vendas</div>
-      <div class="value" id="totalVendas">0</div>
+    <div class="metric" data-c="mint">
+      <div class="lbl">Nº de Vendas</div>
+      <div class="val" id="m-n">0</div>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('vendas')">📋 Vendas</button>
-    <button class="tab" onclick="showTab('clientes')">👥 Por Cliente</button>
+    <button class="tab on" id="tab-v" onclick="showTab('v')">Vendas</button>
+    <button class="tab" id="tab-c" onclick="showTab('c')">Por Cliente</button>
   </div>
 
-  <div id="tab-vendas">
+  <!-- VENDAS -->
+  <div id="pane-v">
     <div class="section">
-      <h2>➕ Nova Venda</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Data</label>
-          <input type="date" id="f-dia">
-        </div>
-        <div class="form-group">
-          <label>Cliente</label>
-          <input type="text" id="f-cliente" placeholder="Nome do cliente" list="lista-clientes">
-          <datalist id="lista-clientes"></datalist>
-        </div>
-        <div class="form-group">
-          <label>Produto</label>
-          <input type="text" id="f-produto" placeholder="Nome do produto" list="lista-produtos">
-          <datalist id="lista-produtos"></datalist>
-        </div>
-        <div class="form-group">
-          <label>Qtd</label>
-          <input type="number" id="f-qtd" value="1" min="1" step="1">
-        </div>
-        <div class="form-group">
-          <label>Preço Unit. (R$)</label>
-          <input type="number" id="f-preco" placeholder="0,00" min="0" step="0.01">
-        </div>
-        <div class="form-group">
-          <label>Valor Pago agora (R$)</label>
-          <input type="number" id="f-pago" placeholder="0,00" min="0" step="0.01">
-        </div>
+      <h2>Nova Venda</h2>
+      <div class="fgrid">
+        <div class="fg"><label>Data</label><input type="date" id="f-dia"></div>
+        <div class="fg"><label>Cliente</label><input type="text" id="f-cli" placeholder="Nome do cliente" list="dl-cli"><datalist id="dl-cli"></datalist></div>
+        <div class="fg"><label>Produto</label><input type="text" id="f-prod" placeholder="Nome do produto" list="dl-prod"><datalist id="dl-prod"></datalist></div>
+        <div class="fg"><label>Qtd</label><input type="number" id="f-qtd" value="1" min="1" step="1"></div>
+        <div class="fg"><label>Preço Unit. (R$)</label><input type="number" id="f-preco" placeholder="0,00" min="0" step="0.01"></div>
+        <div class="fg"><label>Valor Pago Agora (R$)</label><input type="number" id="f-pg" placeholder="0,00" min="0" step="0.01"></div>
       </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="adicionarVenda()">Adicionar Venda</button>
-        <button class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+      <div class="btns">
+        <button class="btn prim" onclick="addVenda()">Adicionar Venda</button>
+        <button class="btn" onclick="limpar()">Limpar</button>
       </div>
     </div>
 
     <div class="section">
-      <h2>📋 Vendas Registradas</h2>
-      <div style="display:flex; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
-        <input type="text" id="filtro-cliente" placeholder="Filtrar por cliente..." oninput="renderTabela()" style="padding:7px 10px; border:1.5px solid #b2e8e4; border-radius:8px; font-size:13px; font-family:inherit; width:200px; background:#f0fbfa; outline:none;">
-        <select id="filtro-status" onchange="renderTabela()" style="padding:7px 10px; border:1.5px solid #b2e8e4; border-radius:8px; font-size:13px; font-family:inherit; background:#f0fbfa; outline:none;">
+      <h2>Vendas Registradas</h2>
+      <div class="filters">
+        <input type="text" id="fi-cli" placeholder="Filtrar por cliente..." oninput="render()">
+        <select id="fi-st" onchange="render()">
           <option value="">Todos os status</option>
           <option value="pago">Pago</option>
           <option value="parcial">Parcial</option>
           <option value="aberto">Em Aberto</option>
         </select>
-        <button class="btn btn-secondary" onclick="exportarCSV()" style="font-size:13px; padding:7px 14px;">⬇️ Exportar CSV</button>
+        <button class="btn" onclick="exportCSV()">Exportar CSV</button>
       </div>
-
-      <div style="overflow-x:auto;">
+      <div class="tbl-wrap">
         <table>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Data</th>
-              <th>Cliente</th>
-              <th>Produto</th>
-              <th>Qtd</th>
-              <th>Preço Unit.</th>
-              <th>Total</th>
-              <th>Valor Pago</th>
-              <th>Em Aberto</th>
-              <th>Status</th>
-              <th></th>
+              <th>#</th><th>Data</th><th>Cliente</th><th>Produto</th>
+              <th>Qtd</th><th>Unit.</th><th>Total</th>
+              <th>Pago</th><th>Aberto</th><th>Status</th><th></th>
             </tr>
           </thead>
-          <tbody id="tbody-vendas"></tbody>
+          <tbody id="tbody"></tbody>
         </table>
-        <div id="empty-msg" class="empty" style="display:none;">Nenhuma venda registrada ainda.</div>
+        <div id="cv-empty" class="empty" style="display:none">Nenhuma venda registrada ainda.</div>
       </div>
     </div>
   </div>
 
-  <div id="tab-clientes" style="display:none;">
+  <!-- CLIENTES -->
+  <div id="pane-c" style="display:none">
     <div class="section">
-      <h2>👥 Resumo por Cliente</h2>
-      <div class="cliente-resumo" id="cliente-resumo"></div>
-      <div id="empty-clientes" class="empty" style="display:none;">Nenhum cliente ainda.</div>
+      <h2>Resumo por Cliente</h2>
+      <div class="cc-grid" id="cc-grid"></div>
+      <div id="cc-empty" class="empty" style="display:none">Nenhum cliente ainda.</div>
     </div>
   </div>
 
 </div>
 
 <script>
-  let vendas = JSON.parse(localStorage.getItem('vendas') || '[]');
-  let nextId = parseInt(localStorage.getItem('nextId') || '1');
+  let vendas = [];
+  let nid = 1;
+  try { vendas = JSON.parse(localStorage.getItem('cv_vendas2') || '[]'); nid = parseInt(localStorage.getItem('cv_nid2') || '1'); } catch(e){}
 
-  function salvar() {
-    localStorage.setItem('vendas', JSON.stringify(vendas));
-    localStorage.setItem('nextId', nextId);
-  }
+  function save(){ try{ localStorage.setItem('cv_vendas2', JSON.stringify(vendas)); localStorage.setItem('cv_nid2', nid); }catch(e){} }
 
   document.getElementById('f-dia').valueAsDate = new Date();
   renderTudo();
 
-  function showTab(tab) {
-    document.getElementById('tab-vendas').style.display = tab === 'vendas' ? 'block' : 'none';
-    document.getElementById('tab-clientes').style.display = tab === 'clientes' ? 'block' : 'none';
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', (i === 0 && tab === 'vendas') || (i === 1 && tab === 'clientes'));
-    });
-    if (tab === 'clientes') renderClientes();
+  function showTab(t) {
+    document.getElementById('pane-v').style.display = t==='v' ? 'block' : 'none';
+    document.getElementById('pane-c').style.display = t==='c' ? 'block' : 'none';
+    document.getElementById('tab-v').className = 'tab' + (t==='v' ? ' on' : '');
+    document.getElementById('tab-c').className = 'tab' + (t==='c' ? ' on' : '');
+    if(t==='c') renderClientes();
   }
 
-  function adicionarVenda() {
-    const dia = document.getElementById('f-dia').value;
-    const cliente = document.getElementById('f-cliente').value.trim();
-    const produto = document.getElementById('f-produto').value.trim();
-    const qtd = parseFloat(document.getElementById('f-qtd').value) || 1;
+  function addVenda() {
+    const dia   = document.getElementById('f-dia').value;
+    const cli   = document.getElementById('f-cli').value.trim();
+    const prod  = document.getElementById('f-prod').value.trim();
+    const qtd   = parseFloat(document.getElementById('f-qtd').value) || 1;
     const preco = parseFloat(document.getElementById('f-preco').value) || 0;
-    const pago = parseFloat(document.getElementById('f-pago').value) || 0;
-
-    if (!cliente || !produto || !dia) {
-      alert('Preencha ao menos: Data, Cliente e Produto.');
-      return;
-    }
-
-    const total = qtd * preco;
-    const emAberto = Math.max(0, total - pago);
-    const status = pago >= total ? 'pago' : pago > 0 ? 'parcial' : 'aberto';
-
-    vendas.push({ id: nextId++, dia, cliente, produto, qtd, preco, total, pago, emAberto, status });
-    salvar();
-    limparFormulario();
-    renderTudo();
+    const pg    = parseFloat(document.getElementById('f-pg').value) || 0;
+    if(!dia || !cli || !prod) { alert('Preencha data, cliente e produto.'); return; }
+    const total  = qtd * preco;
+    const aberto = Math.max(0, total - pg);
+    const st     = pg >= total ? 'pago' : pg > 0 ? 'parcial' : 'aberto';
+    vendas.push({ id: nid++, dia, cli, prod, qtd, preco, total, pg, aberto, st });
+    save(); limpar(); renderTudo();
   }
 
-  function limparFormulario() {
-    document.getElementById('f-cliente').value = '';
-    document.getElementById('f-produto').value = '';
+  function limpar() {
+    ['f-cli','f-prod','f-preco','f-pg'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('f-qtd').value = '1';
-    document.getElementById('f-preco').value = '';
-    document.getElementById('f-pago').value = '';
     document.getElementById('f-dia').valueAsDate = new Date();
   }
 
-  function excluirVenda(id) {
-    if (!confirm('Excluir esta venda?')) return;
+  function delVenda(id) {
+    if(!confirm('Excluir esta venda?')) return;
     vendas = vendas.filter(v => v.id !== id);
-    salvar();
-    renderTudo();
+    save(); renderTudo();
   }
 
-  function atualizarPago(id, valor) {
+  function upPago(id, val) {
     const v = vendas.find(v => v.id === id);
-    if (!v) return;
-    v.pago = Math.min(parseFloat(valor) || 0, v.total);
-    v.emAberto = Math.max(0, v.total - v.pago);
-    v.status = v.pago >= v.total ? 'pago' : v.pago > 0 ? 'parcial' : 'aberto';
-    salvar();
-    renderTudo();
+    if(!v) return;
+    v.pg     = Math.min(parseFloat(val) || 0, v.total);
+    v.aberto = Math.max(0, v.total - v.pg);
+    v.st     = v.pg >= v.total ? 'pago' : v.pg > 0 ? 'parcial' : 'aberto';
+    save(); renderTudo();
   }
 
-  function renderTudo() {
-    renderTabela();
-    renderCards();
-    atualizarDatalist();
-  }
+  function renderTudo() { render(); renderCards(); datalist(); }
 
-  function renderTabela() {
-    const filtroCliente = document.getElementById('filtro-cliente').value.toLowerCase();
-    const filtroStatus = document.getElementById('filtro-status').value;
-
-    const filtradas = vendas.filter(v =>
-      (!filtroCliente || v.cliente.toLowerCase().includes(filtroCliente)) &&
-      (!filtroStatus || v.status === filtroStatus)
+  function render() {
+    const fc = document.getElementById('fi-cli').value.toLowerCase();
+    const fs = document.getElementById('fi-st').value;
+    const list = vendas.filter(v =>
+      (!fc || v.cli.toLowerCase().includes(fc)) && (!fs || v.st === fs)
     );
-
-    const tbody = document.getElementById('tbody-vendas');
-    const empty = document.getElementById('empty-msg');
-
-    if (filtradas.length === 0) {
-      tbody.innerHTML = '';
-      empty.style.display = 'block';
-      return;
-    }
-    empty.style.display = 'none';
-
-    tbody.innerHTML = filtradas.map(v => `
-      <tr>
-        <td style="color:#aaa">${v.id}</td>
-        <td>${formatarData(v.dia)}</td>
-        <td><strong>${v.cliente}</strong></td>
-        <td>${v.produto}</td>
-        <td>${v.qtd}</td>
-        <td>${fmt(v.preco)}</td>
-        <td><strong>${fmt(v.total)}</strong></td>
-        <td>
-          <input class="input-pago" type="number" value="${v.pago}" min="0" max="${v.total}" step="0.01"
-            onchange="atualizarPago(${v.id}, this.value)">
-        </td>
-        <td style="color:${v.emAberto > 0 ? '#e05c5c' : '#2ec4b6'}">${fmt(v.emAberto)}</td>
-        <td><span class="badge ${v.status}">${v.status === 'pago' ? 'Pago' : v.status === 'parcial' ? 'Parcial' : 'Em Aberto'}</span></td>
-        <td><button class="btn btn-danger" onclick="excluirVenda(${v.id})">✕</button></td>
-      </tr>
-    `).join('');
+    const tb = document.getElementById('tbody');
+    const em = document.getElementById('cv-empty');
+    if(!list.length) { tb.innerHTML = ''; em.style.display = 'block'; return; }
+    em.style.display = 'none';
+    tb.innerHTML = list.map(v => `<tr>
+      <td class="id-col">${v.id}</td>
+      <td>${fmtD(v.dia)}</td>
+      <td style="font-weight:600;color:#B8F0E0">${esc(v.cli)}</td>
+      <td style="color:#8db8c8">${esc(v.prod)}</td>
+      <td>${v.qtd}</td>
+      <td>${fmt(v.preco)}</td>
+      <td style="font-weight:600">${fmt(v.total)}</td>
+      <td><input class="ipago" type="number" value="${v.pg.toFixed(2)}" min="0" max="${v.total}" step="0.01" onchange="upPago(${v.id},this.value)"></td>
+      <td style="color:${v.aberto>0?'#f0786a':'#1ABFAA'};font-weight:500">${fmt(v.aberto)}</td>
+      <td><span class="badge ${v.st}">${v.st==='pago'?'Pago':v.st==='parcial'?'Parcial':'Em Aberto'}</span></td>
+      <td><button class="btn sm" onclick="delVenda(${v.id})">✕</button></td>
+    </tr>`).join('');
   }
 
   function renderCards() {
-    const totalVendido = vendas.reduce((s, v) => s + v.total, 0);
-    const totalPago = vendas.reduce((s, v) => s + v.pago, 0);
-    const totalAberto = vendas.reduce((s, v) => s + v.emAberto, 0);
-    document.getElementById('totalVendido').textContent = fmt(totalVendido);
-    document.getElementById('totalPago').textContent = fmt(totalPago);
-    document.getElementById('totalAberto').textContent = fmt(totalAberto);
-    document.getElementById('totalVendas').textContent = vendas.length;
+    const tv = vendas.reduce((s,v) => s+v.total, 0);
+    const tp = vendas.reduce((s,v) => s+v.pg, 0);
+    const ta = vendas.reduce((s,v) => s+v.aberto, 0);
+    document.getElementById('m-vendido').textContent = fmt(tv);
+    document.getElementById('m-pago').textContent    = fmt(tp);
+    document.getElementById('m-aberto').textContent  = fmt(ta);
+    document.getElementById('m-n').textContent       = vendas.length;
   }
 
   function renderClientes() {
-    const mapa = {};
+    const mp = {};
     vendas.forEach(v => {
-      if (!mapa[v.cliente]) mapa[v.cliente] = { total: 0, pago: 0, aberto: 0, qtdVendas: 0 };
-      mapa[v.cliente].total += v.total;
-      mapa[v.cliente].pago += v.pago;
-      mapa[v.cliente].aberto += v.emAberto;
-      mapa[v.cliente].qtdVendas++;
+      if(!mp[v.cli]) mp[v.cli] = { total:0, pg:0, ab:0, n:0 };
+      mp[v.cli].total += v.total;
+      mp[v.cli].pg    += v.pg;
+      mp[v.cli].ab    += v.aberto;
+      mp[v.cli].n++;
     });
-
-    const nomes = Object.keys(mapa);
-    const container = document.getElementById('cliente-resumo');
-    const empty = document.getElementById('empty-clientes');
-
-    if (nomes.length === 0) {
-      container.innerHTML = '';
-      empty.style.display = 'block';
-      return;
-    }
-    empty.style.display = 'none';
-
-    container.innerHTML = nomes.map(nome => {
-      const c = mapa[nome];
-      return `
-        <div class="cliente-card">
-          <div class="nome">👤 ${nome}</div>
-          <div class="linha"><span>Vendas</span><span>${c.qtdVendas}</span></div>
-          <div class="linha"><span>Total comprado</span><span>${fmt(c.total)}</span></div>
-          <div class="linha"><span>Total pago</span><span style="color:#2ec4b6">${fmt(c.pago)}</span></div>
-          <div class="linha destaque"><span>Em aberto</span><span>${fmt(c.aberto)}</span></div>
-        </div>
-      `;
-    }).join('');
+    const nomes = Object.keys(mp);
+    const g  = document.getElementById('cc-grid');
+    const em = document.getElementById('cc-empty');
+    if(!nomes.length) { g.innerHTML = ''; em.style.display = 'block'; return; }
+    em.style.display = 'none';
+    g.innerHTML = nomes.map(n => `<div class="cc">
+      <div class="nome">${esc(n)}</div>
+      <div class="row"><span>Vendas</span><span>${mp[n].n}</span></div>
+      <div class="row"><span>Total comprado</span><span>${fmt(mp[n].total)}</span></div>
+      <div class="row ok"><span>Total pago</span><span>${fmt(mp[n].pg)}</span></div>
+      <div class="row danger"><span>Em aberto</span><span>${fmt(mp[n].ab)}</span></div>
+    </div>`).join('');
   }
 
-  function atualizarDatalist() {
-    const clientes = [...new Set(vendas.map(v => v.cliente))];
-    const produtos = [...new Set(vendas.map(v => v.produto))];
-    document.getElementById('lista-clientes').innerHTML = clientes.map(c => `<option value="${c}">`).join('');
-    document.getElementById('lista-produtos').innerHTML = produtos.map(p => `<option value="${p}">`).join('');
+  function datalist() {
+    const clis  = [...new Set(vendas.map(v => v.cli))];
+    const prods = [...new Set(vendas.map(v => v.prod))];
+    document.getElementById('dl-cli').innerHTML  = clis.map(c  => `<option value="${esc(c)}">`).join('');
+    document.getElementById('dl-prod').innerHTML = prods.map(p => `<option value="${esc(p)}">`).join('');
   }
 
-  function exportarCSV() {
-    const cabecalho = ['ID','Data','Cliente','Produto','Qtd','Preço Unit.','Total','Valor Pago','Em Aberto','Status'];
-    const linhas = vendas.map(v => [
-      v.id, v.dia, v.cliente, v.produto, v.qtd,
-      v.preco.toFixed(2), v.total.toFixed(2), v.pago.toFixed(2), v.emAberto.toFixed(2), v.status
-    ]);
-    const csv = [cabecalho, ...linhas].map(l => l.join(';')).join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+  function exportCSV() {
+    const h = ['ID','Data','Cliente','Produto','Qtd','Preço Unit.','Total','Valor Pago','Em Aberto','Status'];
+    const rows = vendas.map(v => [v.id,v.dia,v.cli,v.prod,v.qtd,v.preco.toFixed(2),v.total.toFixed(2),v.pg.toFixed(2),v.aberto.toFixed(2),v.st]);
+    const csv  = [h,...rows].map(r => r.join(';')).join('\n');
+    const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
     a.href = url; a.download = 'vendas.csv'; a.click();
     URL.revokeObjectURL(url);
   }
 
-  function fmt(v) {
-    return 'R$ ' + (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  function formatarData(d) {
-    if (!d) return '';
-    const [y, m, dia] = d.split('-');
-    return `${dia}/${m}/${y}`;
-  }
+  function fmt(v)  { return 'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function fmtD(d) { if(!d) return ''; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+  function esc(s)  { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
 </html>
