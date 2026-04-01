@@ -27,20 +27,21 @@
   body {
     font-family: var(--font);
     background-color: var(--bg);
-    background-image: radial-gradient(circle, rgba(184,240,224,0.18) 1.5px, transparent 1.5px);
-    background-size: 36px 36px;
+    background-image: radial-gradient(circle, rgba(184,240,224,0.2) 2px, transparent 2px);
+    background-size: 44px 44px;
     color: var(--text);
     min-height: 100vh;
   }
 
   header {
-    background: rgba(30,28,53,0.85);
+    background: rgba(30,28,53,0.88);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     padding: 1.1rem 2rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
+    gap: 10px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -48,19 +49,20 @@
   header h1 {
     font-size: 1.15rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     color: var(--mint);
+    text-transform: uppercase;
   }
   .header-dot {
-    width: 10px; height: 10px;
+    width: 9px; height: 9px;
     border-radius: 50%;
     background: var(--teal);
     box-shadow: 0 0 10px var(--teal);
+    flex-shrink: 0;
   }
 
   .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-  /* METRIC CARDS */
   .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 2rem; }
   .metric {
     background: var(--surface);
@@ -85,70 +87,55 @@
   .metric[data-c="red"]   { --accent: var(--danger); }
   .metric[data-c="mint"]  { --accent: var(--mint); }
   .metric .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .metric .val { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+  .metric .val { font-size: 1.35rem; font-weight: 700; }
   .metric[data-c="blue"]  .val { color: #6ec6e8; }
   .metric[data-c="teal"]  .val { color: var(--teal); }
   .metric[data-c="red"]   .val { color: var(--danger); }
   .metric[data-c="mint"]  .val { color: var(--mint); }
 
-  /* TABS */
   .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; }
   .tab {
-    padding: 8px 20px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: transparent;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: var(--font);
-    color: var(--muted);
-    cursor: pointer;
-    letter-spacing: 0.03em;
-    transition: all 0.15s;
+    padding: 8px 20px; border-radius: 10px;
+    border: 1px solid var(--border); background: transparent;
+    font-size: 13px; font-weight: 600; font-family: var(--font);
+    color: var(--muted); cursor: pointer; letter-spacing: 0.03em; transition: all 0.15s;
   }
   .tab:hover { color: var(--text); border-color: var(--border-hi); }
   .tab.on { background: var(--teal); color: #1e1c35; border-color: var(--teal); }
 
-  /* SECTION */
   .section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 1.75rem;
-    margin-bottom: 1.5rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 1.75rem; margin-bottom: 1.5rem;
   }
   .section h2 {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin-bottom: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--teal);
+    margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
   }
   .section h2::before {
-    content: '';
-    display: inline-block;
-    width: 4px; height: 14px;
-    background: var(--teal);
-    border-radius: 2px;
+    content: ''; display: inline-block; width: 4px; height: 14px;
+    background: var(--teal); border-radius: 2px; flex-shrink: 0;
   }
 
-  /* FORM */
-  .fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  /* FORM — alinha label + input em cada coluna, todos com mesma altura */
+  .fgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    align-items: end;
+  }
   .fg { display: flex; flex-direction: column; gap: 5px; }
-  .fg label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .fg label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+    height: 16px; display: flex; align-items: center;
+  }
   .fg input, .fg select {
-    padding: 9px 11px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 13px;
-    font-family: var(--font);
-    color: var(--text);
-    outline: none;
+    height: 38px;
+    padding: 0 11px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 13px; font-family: var(--font);
+    color: var(--text); outline: none; width: 100%;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
   .fg input:focus, .fg select:focus {
@@ -156,21 +143,15 @@
     box-shadow: 0 0 0 3px rgba(26,191,170,0.15);
   }
   .fg select option { background: var(--card); }
+  /* Setas de step=10 visíveis */
+  .fg input[type="number"] { padding-right: 4px; }
 
-  /* BUTTONS */
   .btns { display: flex; gap: 10px; margin-top: 1.25rem; flex-wrap: wrap; }
   .btn {
-    padding: 9px 20px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: transparent;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: var(--font);
-    color: var(--muted);
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    transition: all 0.15s;
+    padding: 9px 20px; border-radius: 10px;
+    border: 1px solid var(--border); background: transparent;
+    font-size: 13px; font-weight: 600; font-family: var(--font);
+    color: var(--muted); cursor: pointer; letter-spacing: 0.02em; transition: all 0.15s;
   }
   .btn:hover { color: var(--text); background: var(--card); border-color: var(--border-hi); }
   .btn.prim { background: var(--teal); color: #1e1c35; border-color: var(--teal); }
@@ -178,59 +159,63 @@
   .btn.sm { padding: 4px 10px; font-size: 11px; color: var(--danger); border-color: rgba(240,120,106,0.25); background: rgba(240,120,106,0.08); }
   .btn.sm:hover { background: rgba(240,120,106,0.18); }
 
-  /* FILTERS */
   .filters { display: flex; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
   .filters input, .filters select {
-    padding: 7px 11px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-size: 13px;
-    font-family: var(--font);
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
+    height: 36px; padding: 0 11px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 13px; font-family: var(--font);
+    color: var(--text); outline: none; transition: border-color 0.15s;
   }
   .filters input:focus, .filters select:focus { border-color: var(--teal); }
   .filters select option { background: var(--card); }
-  .filters input { width: 190px; }
+  .filters input { width: 200px; }
 
   /* TABLE */
   .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th {
-    text-align: left; padding: 10px 12px;
+    text-align: left; padding: 10px 14px;
     font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--muted);
     background: var(--card);
-    border-bottom: 1px solid var(--border);
+    /* linha separadora entre cabeçalho e dados */
+    border-bottom: 2px solid var(--border-hi);
+    white-space: nowrap;
   }
-  td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--text); }
+  td {
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+    vertical-align: middle; color: var(--text); white-space: nowrap;
+  }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: rgba(26,191,170,0.05); }
   td.id-col { font-size: 11px; color: var(--muted); font-weight: 500; }
 
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; }
   .badge.pago    { background: rgba(26,191,170,0.15); color: var(--teal); border: 1px solid rgba(26,191,170,0.3); }
   .badge.aberto  { background: rgba(240,120,106,0.12); color: var(--danger); border: 1px solid rgba(240,120,106,0.25); }
   .badge.parcial { background: rgba(245,194,107,0.12); color: var(--warn); border: 1px solid rgba(245,194,107,0.25); }
 
   .ipago {
-    width: 88px; padding: 5px 8px;
+    width: 100px; height: 30px; padding: 0 8px;
     background: var(--card); border: 1px solid var(--border);
     border-radius: 8px; font-size: 12px; font-family: var(--font);
-    color: var(--text); outline: none;
-    transition: border-color 0.15s;
+    color: var(--text); outline: none; transition: border-color 0.15s;
   }
   .ipago:focus { border-color: var(--teal); }
 
-  /* CLIENT CARDS */
+  /* CLIENTES */
+  .cc-search { margin-bottom: 1rem; }
+  .cc-search input {
+    height: 36px; padding: 0 12px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 13px; font-family: var(--font);
+    color: var(--text); outline: none; width: 220px; transition: border-color 0.15s;
+  }
+  .cc-search input:focus { border-color: var(--teal); }
   .cc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
   .cc {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.1rem 1.2rem;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.1rem 1.2rem;
     transition: border-color 0.2s, transform 0.2s;
   }
   .cc:hover { border-color: var(--border-hi); transform: translateY(-2px); }
@@ -244,9 +229,10 @@
 
   @media(max-width:700px){
     .metrics { grid-template-columns: 1fr 1fr; }
-    .metric .val { font-size: 1.2rem; }
+    .metric .val { font-size: 1.1rem; }
     table { font-size: 12px; }
     th, td { padding: 8px 7px; }
+    .ipago { width: 80px; }
   }
 </style>
 </head>
@@ -255,6 +241,7 @@
 <header>
   <div class="header-dot"></div>
   <h1>Controle de Vendas</h1>
+  <div class="header-dot"></div>
 </header>
 
 <div class="container">
@@ -283,17 +270,36 @@
     <button class="tab" id="tab-c" onclick="showTab('c')">Por Cliente</button>
   </div>
 
-  <!-- VENDAS -->
   <div id="pane-v">
     <div class="section">
       <h2>Nova Venda</h2>
       <div class="fgrid">
-        <div class="fg"><label>Data</label><input type="date" id="f-dia"></div>
-        <div class="fg"><label>Cliente</label><input type="text" id="f-cli" placeholder="Nome do cliente" list="dl-cli"><datalist id="dl-cli"></datalist></div>
-        <div class="fg"><label>Produto</label><input type="text" id="f-prod" placeholder="Nome do produto" list="dl-prod"><datalist id="dl-prod"></datalist></div>
-        <div class="fg"><label>Qtd</label><input type="number" id="f-qtd" value="1" min="1" step="1"></div>
-        <div class="fg"><label>Preço Unit. (R$)</label><input type="number" id="f-preco" placeholder="0,00" min="0" step="0.01"></div>
-        <div class="fg"><label>Valor Pago Agora (R$)</label><input type="number" id="f-pg" placeholder="0,00" min="0" step="0.01"></div>
+        <div class="fg">
+          <label>Data</label>
+          <input type="date" id="f-dia">
+        </div>
+        <div class="fg">
+          <label>Cliente</label>
+          <input type="text" id="f-cli" placeholder="Nome do cliente" list="dl-cli" autocomplete="off">
+          <datalist id="dl-cli"></datalist>
+        </div>
+        <div class="fg">
+          <label>Produto</label>
+          <input type="text" id="f-prod" placeholder="Nome do produto" list="dl-prod" autocomplete="off">
+          <datalist id="dl-prod"></datalist>
+        </div>
+        <div class="fg">
+          <label>Qtd</label>
+          <input type="number" id="f-qtd" value="1" min="1" step="1">
+        </div>
+        <div class="fg">
+          <label>Preco Unit. (R$)</label>
+          <input type="number" id="f-preco" placeholder="0,00" min="0" step="10">
+        </div>
+        <div class="fg">
+          <label>Valor Pago Agora (R$)</label>
+          <input type="number" id="f-pg" placeholder="0,00" min="0" step="10">
+        </div>
       </div>
       <div class="btns">
         <button class="btn prim" onclick="addVenda()">Adicionar Venda</button>
@@ -317,9 +323,17 @@
         <table>
           <thead>
             <tr>
-              <th>#</th><th>Data</th><th>Cliente</th><th>Produto</th>
-              <th>Qtd</th><th>Unit.</th><th>Total</th>
-              <th>Pago</th><th>Aberto</th><th>Status</th><th></th>
+              <th>#</th>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Produto</th>
+              <th>Qtd</th>
+              <th>Unit.</th>
+              <th>Total</th>
+              <th>Pago</th>
+              <th>Em Aberto</th>
+              <th>Status</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -329,12 +343,14 @@
     </div>
   </div>
 
-  <!-- CLIENTES -->
   <div id="pane-c" style="display:none">
     <div class="section">
       <h2>Resumo por Cliente</h2>
+      <div class="cc-search">
+        <input type="text" id="fi-cc" placeholder="Buscar cliente..." oninput="renderClientes()">
+      </div>
       <div class="cc-grid" id="cc-grid"></div>
-      <div id="cc-empty" class="empty" style="display:none">Nenhum cliente ainda.</div>
+      <div id="cc-empty" class="empty" style="display:none">Nenhum cliente encontrado.</div>
     </div>
   </div>
 
@@ -343,19 +359,27 @@
 <script>
   let vendas = [];
   let nid = 1;
-  try { vendas = JSON.parse(localStorage.getItem('cv_vendas2') || '[]'); nid = parseInt(localStorage.getItem('cv_nid2') || '1'); } catch(e){}
+  try {
+    vendas = JSON.parse(localStorage.getItem('cv_vendas2') || '[]');
+    nid    = parseInt(localStorage.getItem('cv_nid2') || '1');
+  } catch(e){}
 
-  function save(){ try{ localStorage.setItem('cv_vendas2', JSON.stringify(vendas)); localStorage.setItem('cv_nid2', nid); }catch(e){} }
+  function save(){
+    try {
+      localStorage.setItem('cv_vendas2', JSON.stringify(vendas));
+      localStorage.setItem('cv_nid2', nid);
+    } catch(e){}
+  }
 
   document.getElementById('f-dia').valueAsDate = new Date();
   renderTudo();
 
   function showTab(t) {
-    document.getElementById('pane-v').style.display = t==='v' ? 'block' : 'none';
-    document.getElementById('pane-c').style.display = t==='c' ? 'block' : 'none';
-    document.getElementById('tab-v').className = 'tab' + (t==='v' ? ' on' : '');
-    document.getElementById('tab-c').className = 'tab' + (t==='c' ? ' on' : '');
-    if(t==='c') renderClientes();
+    document.getElementById('pane-v').style.display = t === 'v' ? 'block' : 'none';
+    document.getElementById('pane-c').style.display = t === 'c' ? 'block' : 'none';
+    document.getElementById('tab-v').className = 'tab' + (t === 'v' ? ' on' : '');
+    document.getElementById('tab-c').className = 'tab' + (t === 'c' ? ' on' : '');
+    if(t === 'c') renderClientes();
   }
 
   function addVenda() {
@@ -364,7 +388,7 @@
     const prod  = document.getElementById('f-prod').value.trim();
     const qtd   = parseFloat(document.getElementById('f-qtd').value) || 1;
     const preco = parseFloat(document.getElementById('f-preco').value) || 0;
-    const pg    = parseFloat(document.getElementById('f-pg').value) || 0;
+    const pg    = Math.max(0, parseFloat(document.getElementById('f-pg').value) || 0);
     if(!dia || !cli || !prod) { alert('Preencha data, cliente e produto.'); return; }
     const total  = qtd * preco;
     const aberto = Math.max(0, total - pg);
@@ -388,17 +412,18 @@
   function upPago(id, val) {
     const v = vendas.find(v => v.id === id);
     if(!v) return;
-    v.pg     = Math.min(parseFloat(val) || 0, v.total);
-    v.aberto = Math.max(0, v.total - v.pg);
-    v.st     = v.pg >= v.total ? 'pago' : v.pg > 0 ? 'parcial' : 'aberto';
+    const p  = Math.max(0, parseFloat(val) || 0);
+    v.pg     = p;
+    v.aberto = Math.max(0, v.total - p);
+    v.st     = p >= v.total ? 'pago' : p > 0 ? 'parcial' : 'aberto';
     save(); renderTudo();
   }
 
   function renderTudo() { render(); renderCards(); datalist(); }
 
   function render() {
-    const fc = document.getElementById('fi-cli').value.toLowerCase();
-    const fs = document.getElementById('fi-st').value;
+    const fc   = document.getElementById('fi-cli').value.toLowerCase();
+    const fs   = document.getElementById('fi-st').value;
     const list = vendas.filter(v =>
       (!fc || v.cli.toLowerCase().includes(fc)) && (!fs || v.st === fs)
     );
@@ -406,24 +431,26 @@
     const em = document.getElementById('cv-empty');
     if(!list.length) { tb.innerHTML = ''; em.style.display = 'block'; return; }
     em.style.display = 'none';
-    tb.innerHTML = list.map(v => `<tr>
-      <td class="id-col">${v.id}</td>
-      <td>${fmtD(v.dia)}</td>
-      <td style="font-weight:600;color:#B8F0E0">${esc(v.cli)}</td>
-      <td style="color:#8db8c8">${esc(v.prod)}</td>
-      <td>${v.qtd}</td>
-      <td>${fmt(v.preco)}</td>
-      <td style="font-weight:600">${fmt(v.total)}</td>
-      <td><input class="ipago" type="number" value="${v.pg.toFixed(2)}" min="0" max="${v.total}" step="0.01" onchange="upPago(${v.id},this.value)"></td>
-      <td style="color:${v.aberto>0?'#f0786a':'#1ABFAA'};font-weight:500">${fmt(v.aberto)}</td>
-      <td><span class="badge ${v.st}">${v.st==='pago'?'Pago':v.st==='parcial'?'Parcial':'Em Aberto'}</span></td>
-      <td><button class="btn sm" onclick="delVenda(${v.id})">✕</button></td>
-    </tr>`).join('');
+    tb.innerHTML = list.map(v => `
+      <tr>
+        <td class="id-col">${v.id}</td>
+        <td>${fmtD(v.dia)}</td>
+        <td style="font-weight:600;color:#B8F0E0">${esc(v.cli)}</td>
+        <td style="color:#8db8c8">${esc(v.prod)}</td>
+        <td>${v.qtd}</td>
+        <td>${fmt(v.preco)}</td>
+        <td style="font-weight:600">${fmt(v.total)}</td>
+        <td><input class="ipago" type="number" value="${v.pg.toFixed(2)}" min="0" step="10" onchange="upPago(${v.id},this.value)"></td>
+        <td style="color:${v.aberto>0?'#f0786a':'#1ABFAA'};font-weight:500">${fmt(v.aberto)}</td>
+        <td><span class="badge ${v.st}">${v.st==='pago'?'Pago':v.st==='parcial'?'Parcial':'Em Aberto'}</span></td>
+        <td><button class="btn sm" onclick="delVenda(${v.id})">&#x2715;</button></td>
+      </tr>
+    `).join('');
   }
 
   function renderCards() {
-    const tv = vendas.reduce((s,v) => s+v.total, 0);
-    const tp = vendas.reduce((s,v) => s+v.pg, 0);
+    const tv = vendas.reduce((s,v) => s+v.total,  0);
+    const tp = vendas.reduce((s,v) => s+v.pg,     0);
     const ta = vendas.reduce((s,v) => s+v.aberto, 0);
     document.getElementById('m-vendido').textContent = fmt(tv);
     document.getElementById('m-pago').textContent    = fmt(tp);
@@ -432,6 +459,7 @@
   }
 
   function renderClientes() {
+    const busca = (document.getElementById('fi-cc').value || '').toLowerCase();
     const mp = {};
     vendas.forEach(v => {
       if(!mp[v.cli]) mp[v.cli] = { total:0, pg:0, ab:0, n:0 };
@@ -440,18 +468,21 @@
       mp[v.cli].ab    += v.aberto;
       mp[v.cli].n++;
     });
-    const nomes = Object.keys(mp);
+    let nomes = Object.keys(mp);
+    if(busca) nomes = nomes.filter(n => n.toLowerCase().includes(busca));
     const g  = document.getElementById('cc-grid');
     const em = document.getElementById('cc-empty');
     if(!nomes.length) { g.innerHTML = ''; em.style.display = 'block'; return; }
     em.style.display = 'none';
-    g.innerHTML = nomes.map(n => `<div class="cc">
-      <div class="nome">${esc(n)}</div>
-      <div class="row"><span>Vendas</span><span>${mp[n].n}</span></div>
-      <div class="row"><span>Total comprado</span><span>${fmt(mp[n].total)}</span></div>
-      <div class="row ok"><span>Total pago</span><span>${fmt(mp[n].pg)}</span></div>
-      <div class="row danger"><span>Em aberto</span><span>${fmt(mp[n].ab)}</span></div>
-    </div>`).join('');
+    g.innerHTML = nomes.map(n => `
+      <div class="cc">
+        <div class="nome">${esc(n)}</div>
+        <div class="row"><span>Vendas</span><span>${mp[n].n}</span></div>
+        <div class="row"><span>Total comprado</span><span>${fmt(mp[n].total)}</span></div>
+        <div class="row ok"><span>Total pago</span><span>${fmt(mp[n].pg)}</span></div>
+        <div class="row danger"><span>Em aberto</span><span>${fmt(mp[n].ab)}</span></div>
+      </div>
+    `).join('');
   }
 
   function datalist() {
@@ -462,7 +493,7 @@
   }
 
   function exportCSV() {
-    const h = ['ID','Data','Cliente','Produto','Qtd','Preço Unit.','Total','Valor Pago','Em Aberto','Status'];
+    const h    = ['ID','Data','Cliente','Produto','Qtd','Preco Unit.','Total','Valor Pago','Em Aberto','Status'];
     const rows = vendas.map(v => [v.id,v.dia,v.cli,v.prod,v.qtd,v.preco.toFixed(2),v.total.toFixed(2),v.pg.toFixed(2),v.aberto.toFixed(2),v.st]);
     const csv  = [h,...rows].map(r => r.join(';')).join('\n');
     const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
@@ -473,7 +504,7 @@
   }
 
   function fmt(v)  { return 'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-  function fmtD(d) { if(!d) return ''; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+  function fmtD(d) { if(!d) return ''; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; }
   function esc(s)  { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
