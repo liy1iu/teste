@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Vendas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f0ff; color: #1a1a2e; min-height: 100vh; }
+
+  header { background: #7c3aed; color: white; padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1rem; }
+  header h1 { font-size: 1.4rem; font-weight: 600; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .card { background: white; border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .card .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .card .value { font-size: 22px; font-weight: 600; }
+  .card.purple .value { color: #7c3aed; }
+  .card.red .value { color: #dc2626; }
+  .card.green .value { color: #16a34a; }
+
+  .section { background: white; border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+  .section h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1.2rem; color: #4c1d95; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group label { font-size: 12px; color: #666; font-weight: 500; }
+  .form-group input, .form-group select {
+    padding: 8px 10px; border: 1.5px solid #e0d7f5; border-radius: 8px;
+    font-size: 14px; font-family: inherit; background: #faf8ff; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: #7c3aed; }
+
+  .btn-row { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+  .btn { padding: 9px 20px; border-radius: 8px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
+  .btn-primary { background: #7c3aed; color: white; }
+  .btn-primary:hover { background: #6d28d9; }
+  .btn-secondary { background: #f3f0ff; color: #7c3aed; border: 1.5px solid #c4b5fd; }
+  .btn-danger { background: #fef2f2; color: #dc2626; border: 1.5px solid #fca5a5; font-size: 12px; padding: 5px 10px; border-radius: 6px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 8px 10px; background: #f5f0ff; color: #4c1d95; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  td { padding: 9px 10px; border-bottom: 1px solid #f0ebff; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #faf8ff; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge.pago { background: #dcfce7; color: #16a34a; }
+  .badge.aberto { background: #fef2f2; color: #dc2626; }
+  .badge.parcial { background: #fef9c3; color: #b45309; }
+
+  .cliente-resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; }
+  .cliente-card { background: #faf8ff; border: 1.5px solid #e0d7f5; border-radius: 10px; padding: 0.9rem 1rem; }
+  .cliente-card .nome { font-weight: 600; font-size: 14px; color: #4c1d95; margin-bottom: 6px; }
+  .cliente-card .linha { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-top: 3px; }
+  .cliente-card .linha span:last-child { font-weight: 500; }
+  .cliente-card .linha.destaque span:last-child { color: #dc2626; font-weight: 600; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 1.2rem; }
+  .tab { padding: 7px 18px; border-radius: 8px; border: 1.5px solid #e0d7f5; background: white; font-size: 13px; font-weight: 500; cursor: pointer; color: #666; font-family: inherit; }
+  .tab.active { background: #7c3aed; color: white; border-color: #7c3aed; }
+
+  .empty { text-align: center; padding: 2rem; color: #aaa; font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    table { font-size: 12px; }
+    td, th { padding: 7px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span>🛍️</span>
+  <h1>Controle de Vendas</h1>
+</header>
+
+<div class="container">
+
+  <!-- Cards de resumo -->
+  <div class="cards">
+    <div class="card purple">
+      <div class="label">Total Vendido</div>
+      <div class="value" id="totalVendido">R$ 0,00</div>
+    </div>
+    <div class="card green">
+      <div class="label">Total Recebido</div>
+      <div class="value" id="totalPago">R$ 0,00</div>
+    </div>
+    <div class="card red">
+      <div class="label">Em Aberto</div>
+      <div class="value" id="totalAberto">R$ 0,00</div>
+    </div>
+    <div class="card">
+      <div class="label">Nº de Vendas</div>
+      <div class="value" id="totalVendas">0</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('vendas')">📋 Vendas</button>
+    <button class="tab" onclick="showTab('clientes')">👥 Por Cliente</button>
+  </div>
+
+  <!-- ABA: VENDAS -->
+  <div id="tab-vendas">
+    <!-- Formulário nova venda -->
+    <div class="section">
+      <h2>➕ Nova Venda</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Data</label>
+          <input type="date" id="f-dia">
+        </div>
+        <div class="form-group">
+          <label>Cliente</label>
+          <input type="text" id="f-cliente" placeholder="Nome do cliente" list="lista-clientes">
+          <datalist id="lista-clientes"></datalist>
+        </div>
+        <div class="form-group">
+          <label>Produto</label>
+          <input type="text" id="f-produto" placeholder="Nome do produto" list="lista-produtos">
+          <datalist id="lista-produtos"></datalist>
+        </div>
+        <div class="form-group">
+          <label>Qtd</label>
+          <input type="number" id="f-qtd" value="1" min="1" step="1">
+        </div>
+        <div class="form-group">
+          <label>Preço Unit. (R$)</label>
+          <input type="number" id="f-preco" placeholder="0,00" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Valor Pago (R$)</label>
+          <input type="number" id="f-pago" placeholder="0,00" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="adicionarVenda()">Adicionar Venda</button>
+        <button class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="section">
+      <h2>📋 Vendas Registradas</h2>
+      <div style="display:flex; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
+        <input type="text" id="filtro-cliente" placeholder="Filtrar por cliente..." oninput="renderTabela()" style="padding:7px 10px; border:1.5px solid #e0d7f5; border-radius:8px; font-size:13px; font-family:inherit; width:200px;">
+        <select id="filtro-status" onchange="renderTabela()" style="padding:7px 10px; border:1.5px solid #e0d7f5; border-radius:8px; font-size:13px; font-family:inherit;">
+          <option value="">Todos os status</option>
+          <option value="pago">Pago</option>
+          <option value="parcial">Parcial</option>
+          <option value="aberto">Em Aberto</option>
+        </select>
+        <button class="btn btn-secondary" onclick="exportarCSV()" style="font-size:13px; padding:7px 14px;">⬇️ Exportar CSV</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Produto</th>
+              <th>Qtd</th>
+              <th>Preço Unit.</th>
+              <th>Total</th>
+              <th>Valor Pago</th>
+              <th>Em Aberto</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-vendas"></tbody>
+        </table>
+        <div id="empty-msg" class="empty" style="display:none;">Nenhuma venda registrada ainda.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA: CLIENTES -->
+  <div id="tab-clientes" style="display:none;">
+    <div class="section">
+      <h2>👥 Resumo por Cliente</h2>
+      <div class="cliente-resumo" id="cliente-resumo"></div>
+      <div id="empty-clientes" class="empty" style="display:none;">Nenhum cliente ainda.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ---- DADOS ----
+  let vendas = JSON.parse(localStorage.getItem('vendas') || '[]');
+  let nextId = parseInt(localStorage.getItem('nextId') || '1');
+
+  function salvar() {
+    localStorage.setItem('vendas', JSON.stringify(vendas));
+    localStorage.setItem('nextId', nextId);
+  }
+
+  // ---- INIT ----
+  document.getElementById('f-dia').valueAsDate = new Date();
+  renderTudo();
+
+  // ---- TABS ----
+  function showTab(tab) {
+    document.getElementById('tab-vendas').style.display = tab === 'vendas' ? 'block' : 'none';
+    document.getElementById('tab-clientes').style.display = tab === 'clientes' ? 'block' : 'none';
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'vendas') || (i === 1 && tab === 'clientes'));
+    });
+    if (tab === 'clientes') renderClientes();
+  }
+
+  // ---- FORMULÁRIO ----
+  function adicionarVenda() {
+    const dia = document.getElementById('f-dia').value;
+    const cliente = document.getElementById('f-cliente').value.trim();
+    const produto = document.getElementById('f-produto').value.trim();
+    const qtd = parseFloat(document.getElementById('f-qtd').value) || 1;
+    const preco = parseFloat(document.getElementById('f-preco').value) || 0;
+    const pago = parseFloat(document.getElementById('f-pago').value) || 0;
+
+    if (!cliente || !produto || !dia) {
+      alert('Preencha ao menos: Data, Cliente e Produto.');
+      return;
+    }
+
+    const total = qtd * preco;
+    const emAberto = Math.max(0, total - pago);
+    const status = pago >= total ? 'pago' : pago > 0 ? 'parcial' : 'aberto';
+
+    vendas.push({ id: nextId++, dia, cliente, produto, qtd, preco, total, pago, emAberto, status });
+    salvar();
+    limparFormulario();
+    renderTudo();
+  }
+
+  function limparFormulario() {
+    document.getElementById('f-cliente').value = '';
+    document.getElementById('f-produto').value = '';
+    document.getElementById('f-qtd').value = '1';
+    document.getElementById('f-preco').value = '';
+    document.getElementById('f-pago').value = '';
+    document.getElementById('f-dia').valueAsDate = new Date();
+  }
+
+  function excluirVenda(id) {
+    if (!confirm('Excluir esta venda?')) return;
+    vendas = vendas.filter(v => v.id !== id);
+    salvar();
+    renderTudo();
+  }
+
+  function marcarPago(id) {
+    const v = vendas.find(v => v.id === id);
+    if (!v) return;
+    v.pago = v.total;
+    v.emAberto = 0;
+    v.status = 'pago';
+    salvar();
+    renderTudo();
+  }
+
+  // ---- RENDER ----
+  function renderTudo() {
+    renderTabela();
+    renderCards();
+    atualizarDatalist();
+  }
+
+  function renderTabela() {
+    const filtroCliente = document.getElementById('filtro-cliente').value.toLowerCase();
+    const filtroStatus = document.getElementById('filtro-status').value;
+
+    const filtradas = vendas.filter(v => {
+      return (!filtroCliente || v.cliente.toLowerCase().includes(filtroCliente))
+          && (!filtroStatus || v.status === filtroStatus);
+    });
+
+    const tbody = document.getElementById('tbody-vendas');
+    const empty = document.getElementById('empty-msg');
+
+    if (filtradas.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = filtradas.map(v => `
+      <tr>
+        <td style="color:#aaa">${v.id}</td>
+        <td>${formatarData(v.dia)}</td>
+        <td><strong>${v.cliente}</strong></td>
+        <td>${v.produto}</td>
+        <td>${v.qtd}</td>
+        <td>${fmt(v.preco)}</td>
+        <td><strong>${fmt(v.total)}</strong></td>
+        <td style="color:#16a34a">${fmt(v.pago)}</td>
+        <td style="color:${v.emAberto > 0 ? '#dc2626' : '#16a34a'}">${fmt(v.emAberto)}</td>
+        <td><span class="badge ${v.status}">${v.status === 'pago' ? 'Pago' : v.status === 'parcial' ? 'Parcial' : 'Em Aberto'}</span></td>
+        <td style="display:flex; gap:5px; flex-wrap:wrap;">
+          ${v.status !== 'pago' ? `<button class="btn btn-secondary btn-danger" onclick="marcarPago(${v.id})">✓ Pago</button>` : ''}
+          <button class="btn btn-danger" onclick="excluirVenda(${v.id})">✕</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function renderCards() {
+    const totalVendido = vendas.reduce((s, v) => s + v.total, 0);
+    const totalPago = vendas.reduce((s, v) => s + v.pago, 0);
+    const totalAberto = vendas.reduce((s, v) => s + v.emAberto, 0);
+    document.getElementById('totalVendido').textContent = fmt(totalVendido);
+    document.getElementById('totalPago').textContent = fmt(totalPago);
+    document.getElementById('totalAberto').textContent = fmt(totalAberto);
+    document.getElementById('totalVendas').textContent = vendas.length;
+  }
+
+  function renderClientes() {
+    const mapa = {};
+    vendas.forEach(v => {
+      if (!mapa[v.cliente]) mapa[v.cliente] = { total: 0, pago: 0, aberto: 0, qtdVendas: 0 };
+      mapa[v.cliente].total += v.total;
+      mapa[v.cliente].pago += v.pago;
+      mapa[v.cliente].aberto += v.emAberto;
+      mapa[v.cliente].qtdVendas++;
+    });
+
+    const nomes = Object.keys(mapa);
+    const container = document.getElementById('cliente-resumo');
+    const empty = document.getElementById('empty-clientes');
+
+    if (nomes.length === 0) {
+      container.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    container.innerHTML = nomes.map(nome => {
+      const c = mapa[nome];
+      return `
+        <div class="cliente-card">
+          <div class="nome">👤 ${nome}</div>
+          <div class="linha"><span>Vendas</span><span>${c.qtdVendas}</span></div>
+          <div class="linha"><span>Total comprado</span><span>${fmt(c.total)}</span></div>
+          <div class="linha"><span>Total pago</span><span style="color:#16a34a">${fmt(c.pago)}</span></div>
+          <div class="linha destaque"><span>Em aberto</span><span>${fmt(c.aberto)}</span></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function atualizarDatalist() {
+    const clientes = [...new Set(vendas.map(v => v.cliente))];
+    const produtos = [...new Set(vendas.map(v => v.produto))];
+    document.getElementById('lista-clientes').innerHTML = clientes.map(c => `<option value="${c}">`).join('');
+    document.getElementById('lista-produtos').innerHTML = produtos.map(p => `<option value="${p}">`).join('');
+  }
+
+  // ---- EXPORTAR CSV ----
+  function exportarCSV() {
+    const cabecalho = ['ID','Data','Cliente','Produto','Qtd','Preço Unit.','Total','Valor Pago','Em Aberto','Status'];
+    const linhas = vendas.map(v => [
+      v.id, v.dia, v.cliente, v.produto, v.qtd,
+      v.preco.toFixed(2), v.total.toFixed(2), v.pago.toFixed(2), v.emAberto.toFixed(2), v.status
+    ]);
+    const csv = [cabecalho, ...linhas].map(l => l.join(';')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'vendas.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ---- UTILS ----
+  function fmt(v) {
+    return 'R$ ' + (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function formatarData(d) {
+    if (!d) return '';
+    const [y, m, dia] = d.split('-');
+    return `${dia}/${m}/${y}`;
+  }
+</script>
+</body>
+</html>
